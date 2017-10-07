@@ -1,0 +1,48 @@
+%scaner_name Lexer
+%codes_type  lexem_code
+%ident_name  Id
+%token_fields
+ "usigned __int128 int_val; __float128 float_val;"
+%class_members 
+  "unsigned __int128 int_part; __float128 frac_part; ssize_t power; ssize_t sign"
+%codes 
+String, If,      Float,       
+Else,   Var,      Int,
+Bool,   Char,    Void,
+Array,  True,    False,
+Proto,  Func,    Const,
+Elif,   Endif,   For,
+In,     While,   Repeat,
+Until,  Exit,    Continue,
+Return, Read,    Print,
+Equal,  Plus,    Minus,
+Mul,    Div,     Percent,
+LT,     GT,      LEQ,
+GEQ,    Nonequal,DivF,
+Mod,    Nonmod,  Non,
+Diz,    Nondiz,  Pow2,
+NPow2,  Pow,     NonPow,
+Chert,  Tilchert,Impl,
+Tilimpl,KavL,    KavR,
+Til,    Mul2,    Mul2t
+
+   
+%idents {[:Letter:]|[:letter:]|_}{[:Letter:]|[:letter:]|_|[:digits:]}
+%keywords
+  "if" : If, "else" : Else, "int" : Int, "var": Var, "float" : Float,"bool": Bool,"char" : Char, "string" : String, "void" : Void, "array" : Array, "true": True, "false": False,"proto": Proto, "func": Func, "const": Const, "elif": Elif, "endif": Endif,"for": For, "in": In,"while": While, "repeat": Repeat, "until": Until, "exit": Exit, "continue": Continue, "return": Return, "read": Read, "print":Print
+%delimiters
+   "=" : Equal, "+" : Plus, "-" : Minus, "*"  : Mul, "/" : Div, "%": Percent,
+"<": LT, ">":GT, "<=": LEQ, ">=":GEQ, "!=":Nonequal,"/.": DivF, "||": Mod, "!||": Nonmod, "!":Non, "&&":Diz, "!&&": Nondiz, "^^": Pow2,"!^^": NPow2,"^":Pow,"~^":NonPow,"|":Chert, "~|":TilChert, "&":Impl, "~&":Tilimpl, "<<":KavL,">>":KavR,"~":Til, "**":Mul2, "**.":Mul2t
+
+%strings 
+   
+
+
+%numbers "val_ = 0; token.code = Number;" : "token.int_val = val_;"
+  %action addHexDigit "val_ = (val_ << 4) + digitToInt(ch);"
+  %action addDecDigit "val_ = val_ * 10 + digitToInt(ch);"
+  %action addBinDigit "val_ = (val_ << 1) + digitToInt(ch);"
+  %action addOctDigit "val_ = (val_ << 3) + digitToInt(ch);"
+  
+  {0(x|X)[:xdigits:]$addHexDigit+ | [:digits:]$addDecDigit+ | 
+   0(b|B)[:bdigits:]$addBinDigit+ | 0(o|O)[:odigits:]$addOctDigit+}
