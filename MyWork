@@ -6,59 +6,51 @@
 %class_members
 "unsigned __int128 int_part; __float128 frac_part; ssize_t power; ssize_t sign"
 %codes
-String, If, Float,
-Else, Var, Int,
-Bool, Char, Void,
-Array, True, False,
-Proto, Func, Const,
-Elif, Endif, For,
-In, While, Repeat,
-Until, Exit, Continue,
-Return, Read, Print,
-Kw_var,Kw_string,Kw_float,
-Kw_int,Kw_char, Kw_void,
+String, If,         Float,
+Else,   Var,        Int,
+Bool,   Char,       Void,
+Array,  True,       False,
+Proto,  Func,       Const,
+Elif,   Endif,      For,
+In,     While,      Repeat,
+Until,  Exit,       Continue,
+Return, Read,       Print,
+Kw_var,	Kw_string,  Kw_float,
+Kw_int,	Kw_char,    Kw_void,
 Kw_bool,
 
-Equal, Plus, Minus,
-Mul, Div, Mod,
-LT, GT, LEQ,
-GEQ, Nequal, FDiv,
-Lor, LNor, LNot,
-LAnd, LNand, LXor,
-LNXor, BXor, BNXor,
-BXor, BNXor, BAnd,
-BNAnd, LShift, RShift,
-BNot, Pow, FPow,
-Assign, endif_block, begin_block,
-cond_op, after_label,elem_mass,
-end_expr, enum, hesh,
+Equal,     Plus,        Minus,
+Mul,       Div,         Mod,
+LT,        GT,          LEQ,
+GEQ,       Nequal,      FDiv,
+Lor,       LNor,        LNot,
+LAnd,      LNand,       LXor,
+LNXor,     BXor,        BNXor,
+BXor,      BNXor,       BAnd,
+BNAnd,     LShift,      RShift,
+BNot,      Pow,         FPow,
+Assign,    endif_block, begin_block,
+cond_op,   after_label, elem_mass,
+end_expr,  enum,        hesh,
 toch2
 
 %idents {[:Letter:]|[:letter:]|_}{[:Letter:]|[:letter:]|_|[:digits:]}
 %keywords
-"if" : If, "else" : Else, "int" : Kw_int, "var": Kw_var, "float" : Kw_float,"bool": Kw_bool,
-"char" : Kw_char, "string" :Kw_string,
-"void" : Kw_void, "array" : Array, "true": True, "false": False,"proto": Proto,
-"func": Func, "const": Const, "elif": Elif, "endif": Endif,"for": For,
-"in": In,"while": While, "repeat": Repeat, "until": Until, "exit": Exit,
+"if" : If, "else" : Else, "int" : Kw_int, "var": Kw_var, "float" : Kw_float,"bool":Kw_bool,
+"char" : Kw_char, "string" :Kw_string, "void" : Kw_void, "array" : Array, "true": True,
+"false": False,"proto": Proto,"func": Func, "const": Const, "elif": Elif, "endif": Endif,
+"for": For,"in": In,"while": While, "repeat": Repeat, "until": Until, "exit": Exit,
 "continue": Continue, "return": Return, "read": Read, "print":Print
 
 %delimiters
-"=" : Equal, "+" : Plus, "-" : Minus, "*" : Mul, "/" : Div, "%": Mod,
-"<": LT, ">":GT, "<=": LEQ, ">=":GEQ, "!=":Nequal,"/.": FPiv, "||": Lor,
-"!||": LNor, "!":LNot, "&&": LAnd, "!&&": LNAnd, "^^": LXor,
-"!^^": LNXor,"^":BXor,"~^":BNXor,"|":Bor, "~|":BNor,
-"&":BAnd, "~&":BNAnd, "«":LSnift,"»":RSnift,"~":BNot, "**":Pow, "**.":FPow,":=":Assing, 
+"=" : Equal, "+" : Plus, "-" : Minus, "*" : Mul, "/" : Div, "%": Mod,"<": LT, ">":GT, 
+"<=": LEQ, ">=":GEQ, "!=":Nequal,"/.": FPiv, "||": Lor,"!||": LNor, "!":LNot, "&&": LAnd, 
+"!&&": LNAnd, "^^": LXor,"!^^": LNXor,"^":BXor,"~^":BNXor,"|":Bor, "~|":BNor,"&":BAnd, 
+"~&":BNAnd, "«":LSnift,"»":RSnift,"~":BNot, "**":Pow, "**.":FPow,":=":Assing, 
 "{}":endif_block, "()":begin_block, "#":hesh, "?":cond_op,";":end_expr, ",":enum, 
 "::":after_label,"[]":elem_mass,":":toch2
 
 %strings {"([:ndq:]$write|""$write)*"}   
+%numbers 
 
-%numbers "val_ = 0; token.code = Number;" : "token.int_val = val_;"
-  %action addHexDigit "val_ = (val_ << 4) + digitToInt(ch);"
-  %action addDecDigit "val_ = val_ * 10 + digitToInt(ch);"
-  %action addBinDigit "val_ = (val_ << 1) + digitToInt(ch);"
-  %action addOctDigit "val_ = (val_ << 3) + digitToInt(ch);"
-  
-  {0(x|X)[:xdigits:]$addHexDigit+ | [:digits:]$addDecDigit+ | 
-   0(b|B)[:bdigits:]$addBinDigit+ | 0(o|O)[:odigits:]$addOctDigit+}
+ 
