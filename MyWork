@@ -8,7 +8,7 @@ Id
 %token_fields
 "usigned __int128 int_val; __float128 float_val;"
 %class_members
-"unsigned __int128 int_part; __float128 frac_part; ssize_t power; ssize_t sign"
+"unsigned __int128 int_part; __float128 frac_part; ssize_t power; ssize_t sign;bool is_float"
 %codes
 String, If,         Float,
 Else,   Var,        Int,
@@ -23,23 +23,26 @@ Kw_bool,Kw_string,  Kw_float,
 Kw_int,	Kw_char,    Kw_void,
 
 
-Equal,       Plus,        Minus,
-Mul,         Div,         Mod,
-LT,          GT,          LEQ,
-GEQ,         Nequal,      FDiv,
-Lor,         LNor,        LNot,
-LAnd,        LNand,       LXor,
-LNXor,       Bor,         BNor,
-BXor,        BNXor,       BAnd,
-BNAnd,       LShift,      RShift,
-BNot,        Pow,         FPow,
-Assign,      Lendif_block,Rendif_block,
-Lbegin_block,Rbegin_block,cond_op,
-after_label, Lelem_mass,  Relem_mass,
-Semicolon,   Comma,       Dim_size,
+Equal,           Plus,             Minus,
+Mul,             Div,              Mod,
+LT,              GT,               LEQ,
+GEQ,             Nequal,           FDiv,
+Lor,             LNor,             LNot,
+LAnd,            LNand,            LXor,
+LNXor,           Bor,              BNor,
+BXor,            BNXor,            BAnd,
+BNAnd,           LShift,           RShift,
+BNot,            Pow,              FPow,
+Assign,          Openif_block,     endif_block,
+Open_begin_block,Close_begin_block,cond_op,
+after_label,     Open_elem_mass,       Close_elem_mass,
+Semicolon,       Comma,            Dim_size,
 Colon
 
 %idents {[:Letter:]|[:letter:]|_}{[:Letter:]|[:letter:]|_|[:digits:]}
+
+%impl_additions size_t digit2int(char32_t)
+
 %keywords
 "if" : If, "else" : Else, "int" : Kw_int, "var": Var, "float" : Kw_float,"bool":Kw_bool,
 "char" : Kw_char, "string" :Kw_string, "void" : Kw_void, "array" : Array, "true": True,
@@ -51,12 +54,11 @@ Colon
 "=" : Equal, "+" : Plus, "-" : Minus, "*" : Mul, "/" : Div, "%": Mod,"<": LT, ">":GT, 
 "<=": LEQ, ">=":GEQ, "!=":Nequal,"/.": FDiv, "||": Lor,"!||": LNor, "!":LNot, "&&": LAnd, 
 "!&&": LNAnd, "^^": LXor,"!^^": LNXor,"^":BXor,"~^":BNXor,"|":Bor, "~|":BNor,"&":BAnd, 
-"~&":BNAnd, "«":LShift,"»":RShift,"~":BNot, "**":Pow, "**.":FPow,":=":Assign, 
-"{":Lendif_block,"}":Rendif_block, "(":Lbegin_block, ")":Rbegin_block,"#":Dim_size, "?":cond_op,";":Semicolon, ",":Comma, 
-"::":after_label,"[":Lelem_mass,"]":Relem_mass,":":Colon
+"~&":BNAnd, "<<":LShift,">>":RShift,"~":BNot, "**":Pow, "**.":FPow,":=":Assign, 
+"{":Openif_block,"}":endif_block, "(":Open_begin_block, ")":Close_begin_block,"#":Dim_size, "?":cond_op,";":Semicolon, ",":Comma, 
+"::":after_label,"[":Open_elem_mass,"]":Close_elem_mass,":":Colon
 
 %strings "buffer.clean();":"token.code=(buffer.length()==1)?Char:String;"
-{"([:ndg:]|"")*"}
 {"([:ndq:]$write|""$write)*"}   
 
 %numbers 
