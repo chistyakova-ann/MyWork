@@ -2,7 +2,7 @@
 %codes_type lexem_code
 
 %codes
-Id
+id
 
 %ident_name Id
 %token_fields
@@ -23,25 +23,24 @@ Kw_bool,Kw_string,  Kw_float,
 Kw_int,	Kw_char,    Kw_void,
 
 
-Equal,           Plus,             Minus,
-Mul,             Div,              Mod,
-LT,              GT,               LEQ,
-GEQ,             Nequal,           FDiv,
-Lor,             LNor,             LNot,
-LAnd,            LNand,            LXor,
-LNXor,           Bor,              BNor,
-BXor,            BNXor,            BAnd,
-BNAnd,           LShift,           RShift,
-BNot,            Pow,              FPow,
-Assign,          Openif_block,     endif_block,
-Open_begin_block,Close_begin_block,cond_op,
-after_label,     Open_elem_mass,       Close_elem_mass,
-Semicolon,       Comma,            Dim_size,
+Equal,             Plus,               Minus,
+Mul,               Div,                Mod,
+LT,                GT,                 LEQ,
+GEQ,               Nequal,             FDiv,
+Lor,               LNor,               LNot,
+LAnd,              LNand,              LXor,
+LNXor,             Bor,                BNor,
+BXor,              BNXor,              BAnd,
+BNAnd,             LShift,             RShift,
+BNot,              Pow,                FPow,
+Assign,            Open_body_func,     close_body_func,
+Open_list_of_names,Close_list_of_names,cond_op,
+after_label,       Open_list_of_expr,  Close_list_of_expr,
+Semicolon,         Comma,              Dim_size,
 Colon
 
 %idents {[:Letter:]|[:letter:]|_}{[:Letter:]|[:letter:]|_|[:digits:]}
 
-%impl_additions size_t digit2int(char32_t)
 
 %keywords
 "if" : If, "else" : Else, "int" : Kw_int, "var": Var, "float" : Kw_float,"bool":Kw_bool,
@@ -55,13 +54,11 @@ Colon
 "<=": LEQ, ">=":GEQ, "!=":Nequal,"/.": FDiv, "||": Lor,"!||": LNor, "!":LNot, "&&": LAnd, 
 "!&&": LNAnd, "^^": LXor,"!^^": LNXor,"^":BXor,"~^":BNXor,"|":Bor, "~|":BNor,"&":BAnd, 
 "~&":BNAnd, "<<":LShift,">>":RShift,"~":BNot, "**":Pow, "**.":FPow,":=":Assign, 
-"{":Openif_block,"}":endif_block, "(":Open_begin_block, ")":Close_begin_block,"#":Dim_size, "?":cond_op,";":Semicolon, ",":Comma, 
-"::":after_label,"[":Open_elem_mass,"]":Close_elem_mass,":":Colon
+"{":Open_body_func,"}":close_body_func, "(":Open_list_of_names, ")":Close_list_of_names,"#":Dim_size, "?":cond_op,";":Semicolon,",":Comma,"::":after_label,"[":Open_list_of_expr,"]":Close_list_of_expr,
+":":Colon
 
 %strings "buffer.clean();":"token.code=(buffer.length()==1)?Char:String;"
 {"([:ndq:]$write|""$write)*"}   
-
-%numbers 
 
 
  
