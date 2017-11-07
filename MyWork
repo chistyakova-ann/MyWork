@@ -61,4 +61,14 @@ Colon
 {"([:ndq:]$write|""$write)*"}   
 
 
+%numbers  "int_part= 0;frac_part=1; token.code = Number;" : "token.int_val = int_part;"
+
+  %action addDecDigit "frac_part=frac_part*10+digit2int(ch)"
+
+  %action addHexDigit "int_part = (int_part << 4) + digitToInt(ch);"
+  %action addDecDigit "int_part = int_part * 10 + digitToInt(ch);"
+  %action addBinDigit "int_part = (int_part<< 1) + digitToInt(ch);"
+  %action addOctDigit "int_part = (int_part<< 3) + digitToInt(ch);"
+  {0(x|X)[:xdigits:]$addHexDigit+ | [:digits:]$addDecDigit+ |0(b|B)[:bdigits:]$addBinDigit+|0(o|O)[:odigits:]$addOctDigit+}|
+{[:digits:](?[digits:])*(.[:digits:]+((E|e)(+|-)?[:digits]+)?)}
  
