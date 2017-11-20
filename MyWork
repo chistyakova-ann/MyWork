@@ -6,9 +6,9 @@ id
 
 %ident_name Id
 %token_fields
-"usigned __int128 int_val; __float128 float_val;"
+"unsigned __int128 int_val; __float128 float_val;"
 %class_members
-"unsigned __int128 int_part; __float128 frac_part; ssize_t power; ssize_t sign;bool is_float"
+"unsigned __int128 int_part; __float128 frac_part; ssize_t power; ssize_t sign;bool is_float;unsigned num_of_digits_in_frac_part;"
 %codes
 String, If,         Float,
 Else,   Var,        Int,
@@ -57,18 +57,27 @@ Colon
 "{":Open_body_func,"}":close_body_func, "(":Open_list_of_names, ")":Close_list_of_names,"#":Dim_size, "?":cond_op,";":Semicolon,",":Comma,"::":after_label,"[":Open_list_of_expr,"]":Close_list_of_expr,
 ":":Colon
 
+%impl_additions 
+"size_t digit2int(char32_t){ 
+         if ((digits>= '0') && (digits <= '9')) 
+            return digits - '0'; 
+         else
+            return -1;
+ }"
+
 %strings "buffer.clean();":"token.code=(buffer.length()==1)?Char:String;"
 {"([:ndq:]$write|""$write)*"}   
 
+%numbers  "int_part= 0;frac_part=1;is_float=0;sign=0;power=0;num_of_digits_in_frac_part=0; token.code = Number;" : "token.int_val = int_part;"
 
-%numbers  "int_part= 0;frac_part=1; token.code = Number;" : "token.int_val = int_part;"
-
-  %action addDecDigit "frac_part=frac_part*10+digit2int(ch)"
-
-  %action addHexDigit "int_part = (int_part << 4) + digitToInt(ch);"
-  %action addDecDigit "int_part = int_part * 10 + digitToInt(ch);"
+  %action addDecdigit "frac_part=frac_part*10+digit2int(ch)"
+  %action addDecDigit "int_part = int_part * 10 + digitToInt(ch);" 
+  %action addOctDigit "int_part = (int_part<< 3) + digitToInt(ch);
   %action addBinDigit "int_part = (int_part<< 1) + digitToInt(ch);"
-  %action addOctDigit "int_part = (int_part<< 3) + digitToInt(ch);"
-  {0(x|X)[:xdigits:]$addHexDigit+ | [:digits:]$addDecDigit+ |0(b|B)[:bdigits:]$addBinDigit+|0(o|O)[:odigits:]$addOctDigit+}|
-{[:digits:](?[digits:])*(.[:digits:]+((E|e)(+|-)?[:digits]+)?)}
- 
+  %action addHexDigit "int_part = (int_part << 4) + digitToInt(ch);"
+
+
+{[:digits:](?[digits:])*$addDecDigit+ | 0(o|O)[:odigits:](?[odigits:])*$addOctDigit+ |
+0(b|B)[:bdigits:](?[bdigits:])*$addBinDigit+ | 0(x|X)[:xdigits:](?[xdigits:])*$addHexDigit+|[:digits:](?[digits:])*$addDecdigit+(.$addDecdigit+[:digits:](?[digits:])*((E|e)(+|-)?[:digits:](?[digits:])*)?)}
+
+
