@@ -1,0 +1,84 @@
+%scaner_name Lexer
+%codes_type lexem_code
+
+%codes
+id
+
+%ident_name Id
+%token_fields
+"unsigned __int128 int_val; __float128 float_val;"
+%class_members
+"unsigned __int128 int_part; __float128 frac_part; ssize_t power; ssize_t sign;bool is_float;unsigned num_of_digits_in_frac_part;"
+%codes
+String, If,         Float,
+Else,   Var,        Int,
+Bool,   Char,       Void,
+Array,  True,       False,
+Proto,  Func,       Const,
+Elif,   Endif,      For,
+In,     While,      Repeat,
+Until,  Exit,       Continue,
+Return, Read,       Print,
+Kw_bool,Kw_string,  Kw_float,
+Kw_int,	Kw_char,    Kw_void,
+
+
+Equal,             Plus,               Minus,
+Mul,               Div,                Mod,
+LT,                GT,                 LEQ,
+GEQ,               Nequal,             FDiv,
+Lor,               LNor,               LNot,
+LAnd,              LNand,              LXor,
+LNXor,             Bor,                BNor,
+BXor,              BNXor,              BAnd,
+BNAnd,             LShift,             RShift,
+BNot,              Pow,                FPow,
+Assign,            Open_body_func,     close_body_func,
+Open_list_of_names,Close_list_of_names,cond_op,
+after_label,       Open_list_of_expr,  Close_list_of_expr,
+Semicolon,         Comma,              Dim_size,
+Colon
+
+%idents {[:Letter:]|[:letter:]|_}{[:Letter:]|[:letter:]|_|[:digits:]}
+
+
+%keywords
+"if" : If, "else" : Else, "int" : Kw_int, "var": Var, "float" : Kw_float,"bool":Kw_bool,
+"char" : Kw_char, "string" :Kw_string, "void" : Kw_void, "array" : Array, "true": True,
+"false": False,"proto": Proto,"func": Func, "const": Const, "elif": Elif, "endif": Endif,
+"for": For,"in": In,"while": While, "repeat": Repeat, "until": Until, "exit": Exit,
+"continue": Continue, "return": Return, "read": Read, "print":Print
+
+%delimiters
+"=" : Equal, "+" : Plus, "-" : Minus, "*" : Mul, "/" : Div, "%": Mod,"<": LT, ">":GT, 
+"<=": LEQ, ">=":GEQ, "!=":Nequal,"/.": FDiv, "||": Lor,"!||": LNor, "!":LNot, "&&": LAnd, 
+"!&&": LNAnd, "^^": LXor,"!^^": LNXor,"^":BXor,"~^":BNXor,"|":Bor, "~|":BNor,"&":BAnd, 
+"~&":BNAnd, "<<":LShift,">>":RShift,"~":BNot, "**":Pow, "**.":FPow,":=":Assign, 
+"{":Open_body_func,"}":close_body_func, "(":Open_list_of_names, ")":Close_list_of_names,"#":Dim_size, "?":cond_op,";":Semicolon,",":Comma,"::":after_label,"[":Open_list_of_expr,"]":Close_list_of_expr,
+":":Colon
+
+%impl_additions 
+"size_t digit2int(char32_t){ 
+       
+}"
+
+%strings "buffer.clean();":"token.code=(buffer.length()==1)?Char:String;"
+{"([:ndq:]$write|""$write)*"}   
+
+%numbers  "int_part= 0;frac_part=0;is_float=0;sign=0;power=0;num_of_digits_in_frac_part=0;" : "действ по заверш;"
+
+
+  %action addDecDigit   "int_part = int_part * 10 + digit2int(ch);" 
+  %action addOctDigit   "int_part = (int_part<< 3) + digit2int(ch);
+  %action addBinDigit   "int_part = (int_part<< 1) + digit2int(ch);"
+  %action addHexDigit   "int_part = (int_part << 4) + digit2int(ch);"  
+  %action addDecFrac    "frac_part=frac_part*10+digit2int(ch);num_of_digits_in_frac_part++;"
+  %action addDecPower   "power=power*10+digit2int(ch);"
+  %action flag_is_float 
+
+
+{[:digits:]$addDecDigit+('?[:digits:]$addDecDigit+)*(.$flag_is_float[:digits:]$addDecFrac+('?[:digits:]$addDecFrac+)*)?
+((E|e)$flag_is_float(+|-)?[:digits:]$addDecPower+('?[:digits:]$addDecPower+)*)?|
+0o[:odigits:]$addOctDigit+('?[:odigits:]$addOctDigit+)*|0(b|B)[:bdigits:]$addBinDigit+('?[:bdigits:]$addBinDigit+)*|
+0(x|X)[:xdigits:]$addHexDigit+('?[:xdigits:]$addHexDigit+)*}
+ 
