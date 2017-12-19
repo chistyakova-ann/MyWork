@@ -77,8 +77,8 @@ Colon
   %action flag_is_float 
 
 
-{[:digits:]$addDecDigit+('?[:digits:]$addDecDigit+)*(.$flag_is_float[:digits:]$addDecFrac+('?[:digits:]$addDecFrac+)*)?
-((E|e)$flag_is_float(+|-)?[:digits:]$addDecPower+('?[:digits:]$addDecPower+)*)?|
-0o[:odigits:]$addOctDigit+('?[:odigits:]$addOctDigit+)*|0(b|B)[:bdigits:]$addBinDigit+('?[:bdigits:]$addBinDigit+)*|
-0(x|X)[:xdigits:]$addHexDigit+('?[:xdigits:]$addHexDigit+)*}
+{[:digits:]$addDecDigit+('?[:digits:]$addDecDigit+)*(.$flag_is_float[:digits:]$addDecFrac('?[:digits:]$addDecFrac)*)?
+((E|e)$flag_is_float(+|-)?[:digits:]$addDecPower('?[:digits:]$addDecPower)*)?|
+0o[:odigits:]$addOctDigit('?[:odigits:]$addOctDigit)*|0(b|B)[:bdigits:]$addBinDigit('?[:bdigits:]$addBinDigit)*|
+0(x|X)[:xdigits:]$addHexDigit('?[:xdigits:]$addHexDigit)*}
  
