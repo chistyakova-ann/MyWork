@@ -7,40 +7,18 @@
 #include <vector>
 #include "../include/operations_with_sets.h"
 
-  #include <quadmath>
-
-  size_t digit2int(char32_t ch) {
-    size_t v = ch - U'0';
-    return (v<=9)? v : (v&0b1101'1111) - 7;
-  }
-  __int128 setexp(char32_t ch) {
-    return (ch == '-')? -1 : 1;
-  }
-
-  __float128 lexem_code: build_float(){
-    return int_part + fract_part*powq(10,-num_of_digits_in_frac_part)+sign*power;
-  }
-
-  lexem_code precision2code(char32_t ch){
-    switch (ch) {
-      case: 'S':
-        return Single;
-        break;
-      case: 'D':
-        return Double;
-        break;
-      case: 'E':
-        return Extended;
-        break;
-      case: 'Q':
-        return Quatro;
-        break;
-      default:
-        return Single;
-        break;
-    }
-  }
-
+#include <quadmath> 
+size_t digit2int(char32_t ch)
+{
+size_t v =  ch - U'0';
+return (v<=9)? v:(v&0b1101'1111) - 7;
+};
+__float128  Lexer::build_float()
+{
+__float128 num;                                                                               
+num = int_value + fract_part*powq(10, num_of_digits);
+num = num*powq(10, sign_of_degree*exponent);
+return num;}
 Lexer::Automaton_proc Lexer::procs[] = {
     &Lexer::start_proc(),     &Lexer::unknown_proc(),   
     &Lexer::idkeyword_proc(), &Lexer::delimiter_proc(), 
@@ -55,10 +33,10 @@ Lexer::Final_proc Lexer::finals[] = {
 
 enum Category {
     SPACES,     DELIMITER_BEGIN, 
-    NUMBER0,    NUMBER5,         
-    NUMBER6,    NUMBER_BEGIN,    
+    NUMBER0,    NUMBER3,         
+    NUMBER4,    NUMBER_BEGIN,    
     NUMBER1,    NUMBER2,         
-    NUMBER3,    NUMBER4,         
+    NUMBER5,    NUMBER6,         
     NUMBER7,    NUMBER8,         
     NUMBER9,    NUMBER10,        
     NUMBER11,   IDKEYWORD_BEGIN, 
@@ -77,26 +55,26 @@ static const std::map<char32_t, uint32_t> categories_table = {
     {'\X18', 1},    {'\X19', 1},    {'\X1a', 1},    {'\X1b', 1},    
     {'\X1c', 1},    {'\X1d', 1},    {'\X1e', 1},    {'\X1f', 1},    
     {' ', 1},       {'!', 2},       {'#', 2},       {'%', 2},       
-    {'&', 2},       {', 512},       {'(', 2},       {')', 2},       
-    {'*', 2},       {'+', 2},       {',', 2},       {'-', 258},     
-    {'.', 2048},    {'/', 2},       {'0', 263228},  {'1', 263288},  
-    {'2', 263280},  {'3', 263280},  {'4', 263280},  {'5', 263280},  
-    {'6', 263280},  {'7', 263280},  {'8', 263264},  {'9', 263264},  
+    {'&', 2},       {', 128},       {'(', 2},       {')', 2},       
+    {'*', 2},       {'+', 16386},   {',', 2},       {'-', 16386},   
+    {'.', 1024},    {'/', 2},       {'0', 262716},  {'1', 262776},  
+    {'2', 262768},  {'3', 262768},  {'4', 262768},  {'5', 262768},  
+    {'6', 262768},  {'7', 262768},  {'8', 262752},  {'9', 262752},  
     {':', 2},       {';', 2},       {'<', 2},       {'=', 2},       
-    {'>', 2},       {'?', 2},       {'A', 361472},  {'B', 365568},  
-    {'C', 361472},  {'D', 361600},  {'E', 361600},  {'F', 361472},  
+    {'>', 2},       {'?', 2},       {'A', 360960},  {'B', 363008},  
+    {'C', 360960},  {'D', 360960},  {'E', 361216},  {'F', 360960},  
     {'G', 360448},  {'H', 360448},  {'I', 360448},  {'J', 360448},  
     {'K', 360448},  {'L', 360448},  {'M', 360448},  {'N', 360448},  
-    {'O', 360448},  {'P', 360448},  {'Q', 360576},  {'R', 360448},  
-    {'S', 360576},  {'T', 360448},  {'U', 360448},  {'V', 360448},  
-    {'W', 360448},  {'X', 368640},  {'Y', 360448},  {'Z', 360448},  
+    {'O', 360448},  {'P', 360448},  {'Q', 360448},  {'R', 360448},  
+    {'S', 360448},  {'T', 360448},  {'U', 360448},  {'V', 360448},  
+    {'W', 360448},  {'X', 364544},  {'Y', 360448},  {'Z', 360448},  
     {'[', 2},       {']', 2},       {'^', 2},       {'_', 360448},  
-    {'a', 689152},  {'b', 431104},  {'c', 689152},  {'d', 623744},  
-    {'e', 689280},  {'f', 689152},  {'g', 622592},  {'h', 622592},  
+    {'a', 688640},  {'b', 428544},  {'c', 688640},  {'d', 623104},  
+    {'e', 688896},  {'f', 688640},  {'g', 622592},  {'h', 622592},  
     {'i', 688128},  {'j', 360448},  {'k', 360448},  {'l', 622592},  
-    {'m', 360448},  {'n', 622592},  {'o', 638976},  {'p', 688128},  
-    {'q', 360576},  {'r', 688128},  {'s', 688256},  {'t', 688128},  
-    {'u', 688128},  {'v', 425984},  {'w', 425984},  {'x', 630784},  
+    {'m', 360448},  {'n', 622592},  {'o', 630784},  {'p', 688128},  
+    {'q', 360448},  {'r', 688128},  {'s', 688128},  {'t', 688128},  
+    {'u', 688128},  {'v', 425984},  {'w', 425984},  {'x', 626688},  
     {'y', 622592},  {'z', 360448},  {'{', 2},       {'|', 2},       
     {'}', 2},       {'~', 2},       {'Ё', 360448}, {'А', 360448}, 
     {'Б', 360448}, {'В', 360448}, {'Г', 360448}, {'Д', 360448}, 
@@ -145,7 +123,7 @@ bool Lexer::start_proc(){
     if(belongs(NUMBER_BEGIN, char_categories)){
         (loc->pcurrent_char)--; automaton = A_number;
         state = 0;
-        int_val = 0; float_val = 0; is_float = false; int_part = 0; fract_part = 0; power = 1; sign = 1;num_of_digits_in_frac_part = 0;token.code = Int;
+        int_value = 0; fract_part = 0; exponent = 0;sign_of_degree=1; num_of_digits = 0; is_float = false
         return t;
     }
 
@@ -165,7 +143,7 @@ bool Lexer::unknown_proc(){
 
 struct Keyword_list_elem{
     std::u32string keyword;
-    lexem_code kw_code;
+    lexemcodes kw_code;
 };
 
 static const Keyword_list_elem kwlist[] = {
@@ -274,7 +252,7 @@ struct Elem {
     /** A pointer to a string of characters that can be crossed. */
     char32_t*       symbols;
     /** A lexeme code. */
-    lexem_code code;
+    lexemcodes code;
     /** If the current character matches symbols[0], then the transition to the state
      *  first_state;
      *  if the current character matches symbols[1], then the transition to the state
@@ -352,8 +330,7 @@ bool Lexer::delimiter_proc(){
 }
 
 static const std::set<size_t> final_states_for_numbers = {
-    1, 2,  3, 4, 5, 6, 7, 8, 
-    9, 10
+    1, 2, 3, 4, 5, 6, 7
 };
 
 bool Lexer::number_proc(){
@@ -362,130 +339,141 @@ bool Lexer::number_proc(){
     switch(state){
         case 0:
             if(belongs(NUMBER0, char_categories)){
-                int_part = int_part * 10 + digit2int(ch);
-                state = 10;
+                int_value = int_value*10 + digit2int(ch);
+                state = 7;
                 there_is_jump = true;
             }
              else if(belongs(NUMBER1, char_categories)){
-                int_part = int_part * 10 + digit2int(ch);
-                state = 9;
+                int_value = int_value*10 + digit2int(ch);
+                state = 6;
                 there_is_jump = true;
             }
 
             break;
         case 1:
             if(belongs(NUMBER2, char_categories)){
-                precision = ch; is_float = true;
+                state = 8;
+                there_is_jump = true;
+            }
+             else if(belongs(NUMBER3, char_categories)){
+                int_value = (int_value << 1) + digit2int(ch);
                 state = 1;
                 there_is_jump = true;
             }
 
             break;
         case 2:
-            if(belongs(NUMBER3, char_categories)){
-                sign = setexp(ch);
-                state = 14;
+            if(belongs(NUMBER2, char_categories)){
+                state = 9;
                 there_is_jump = true;
             }
-             else if(belongs(NUMBER_BEGIN, char_categories)){
-                fract_part = fract_part / 10 + digit2int(ch); num_of_digits_in_frac_part;bool is_float += 1;
-                state = 8;
-                there_is_jump = true;
-            }
-             else if(belongs(NUMBER2, char_categories)){
-                precision = ch; is_float = true;
-                state = 1;
+             else if(belongs(NUMBER4, char_categories)){
+                int_value = (int_value << 3) + digit2int(ch);
+                state = 2;
                 there_is_jump = true;
             }
 
             break;
         case 3:
-            if(belongs(NUMBER4, char_categories)){
-                state = 2;
-                there_is_jump = true;
-            }
-             else if(belongs(NUMBER3, char_categories)){
-                sign = setexp(ch);
-                state = 14;
+            if(belongs(NUMBER2, char_categories)){
+                state = 10;
                 there_is_jump = true;
             }
              else if(belongs(NUMBER_BEGIN, char_categories)){
-                fract_part = fract_part / 10 + digit2int(ch); num_of_digits_in_frac_part;bool is_float += 1;
-                state = 8;
-                there_is_jump = true;
-            }
-             else if(belongs(NUMBER2, char_categories)){
-                precision = ch; is_float = true;
-                state = 1;
+                exponent = exponent*10 + digit2int(ch);
+                state = 3;
                 there_is_jump = true;
             }
 
             break;
         case 4:
-            if(belongs(NUMBER4, char_categories)){
+            if(belongs(NUMBER2, char_categories)){
                 state = 11;
                 there_is_jump = true;
             }
-             else if(belongs(NUMBER5, char_categories)){
-                int_part = (int_part << 1) + digit2int(ch);
+             else if(belongs(NUMBER_BEGIN, char_categories)){
+                fract_part = fract_part*10 + digit2int(ch); ++num_of_digits;
                 state = 4;
+                there_is_jump = true;
+            }
+             else if(belongs(NUMBER5, char_categories)){
+                is_float = true;
+                state = 14;
                 there_is_jump = true;
             }
 
             break;
         case 5:
-            if(belongs(NUMBER4, char_categories)){
-                state = 12;
+            if(belongs(NUMBER2, char_categories)){
+                state = 13;
                 there_is_jump = true;
             }
              else if(belongs(NUMBER6, char_categories)){
-                int_part = (int_part << 3) + digit2int(ch);
+                int_value = (int_value << 4) + digit2int(ch);
                 state = 5;
                 there_is_jump = true;
             }
 
             break;
         case 6:
-            if(belongs(NUMBER4, char_categories)){
-                state = 14;
+            if(belongs(NUMBER2, char_categories)){
+                state = 12;
+                there_is_jump = true;
+            }
+             else if(belongs(NUMBER7, char_categories)){
+                is_float = true;
+                state = 11;
                 there_is_jump = true;
             }
              else if(belongs(NUMBER_BEGIN, char_categories)){
-                epower = power * 10 + digit2int(ch);
+                int_value = int_value*10 + digit2int(ch);
                 state = 6;
+                there_is_jump = true;
+            }
+             else if(belongs(NUMBER5, char_categories)){
+                is_float = true;
+                state = 14;
                 there_is_jump = true;
             }
 
             break;
         case 7:
-            if(belongs(NUMBER4, char_categories)){
-                state = 16;
+            if(belongs(NUMBER2, char_categories)){
+                state = 12;
                 there_is_jump = true;
             }
              else if(belongs(NUMBER7, char_categories)){
-                int_part = (int_part << 4) + digit2int(ch);
-                state = 7;
+                is_float = true;
+                state = 11;
+                there_is_jump = true;
+            }
+             else if(belongs(NUMBER_BEGIN, char_categories)){
+                int_value = int_value*10 + digit2int(ch);
+                state = 6;
+                there_is_jump = true;
+            }
+             else if(belongs(NUMBER8, char_categories)){
+                state = 8;
+                there_is_jump = true;
+            }
+             else if(belongs(NUMBER5, char_categories)){
+                is_float = true;
+                state = 14;
+                there_is_jump = true;
+            }
+             else if(belongs(NUMBER9, char_categories)){
+                state = 13;
+                there_is_jump = true;
+            }
+             else if(belongs(NUMBER10, char_categories)){
+                state = 9;
                 there_is_jump = true;
             }
 
             break;
         case 8:
-            if(belongs(NUMBER4, char_categories)){
-                state = 14;
-                there_is_jump = true;
-            }
-             else if(belongs(NUMBER3, char_categories)){
-                sign = setexp(ch);
-                state = 14;
-                there_is_jump = true;
-            }
-             else if(belongs(NUMBER_BEGIN, char_categories)){
-                fract_part = fract_part / 10 + digit2int(ch); num_of_digits_in_frac_part;bool is_float += 1;
-                state = 8;
-                there_is_jump = true;
-            }
-             else if(belongs(NUMBER2, char_categories)){
-                precision = ch; is_float = true;
+            if(belongs(NUMBER3, char_categories)){
+                int_value = (int_value << 1) + digit2int(ch);
                 state = 1;
                 there_is_jump = true;
             }
@@ -493,114 +481,47 @@ bool Lexer::number_proc(){
             break;
         case 9:
             if(belongs(NUMBER4, char_categories)){
-                state = 15;
-                there_is_jump = true;
-            }
-             else if(belongs(NUMBER3, char_categories)){
-                sign = setexp(ch);
-                state = 14;
-                there_is_jump = true;
-            }
-             else if(belongs(NUMBER8, char_categories)){
-                is_float = true;
-                state = 13;
-                there_is_jump = true;
-            }
-             else if(belongs(NUMBER_BEGIN, char_categories)){
-                int_part = int_part * 10 + digit2int(ch);
-                state = 9;
-                there_is_jump = true;
-            }
-             else if(belongs(NUMBER2, char_categories)){
-                precision = ch; is_float = true;
-                state = 1;
+                int_value = (int_value << 3) + digit2int(ch);
+                state = 2;
                 there_is_jump = true;
             }
 
             break;
         case 10:
-            if(belongs(NUMBER4, char_categories)){
-                state = 15;
-                there_is_jump = true;
-            }
-             else if(belongs(NUMBER3, char_categories)){
-                sign = setexp(ch);
-                state = 14;
-                there_is_jump = true;
-            }
-             else if(belongs(NUMBER8, char_categories)){
-                is_float = true;
-                state = 13;
-                there_is_jump = true;
-            }
-             else if(belongs(NUMBER_BEGIN, char_categories)){
-                int_part = int_part * 10 + digit2int(ch);
-                state = 9;
-                there_is_jump = true;
-            }
-             else if(belongs(NUMBER9, char_categories)){
-                state = 11;
-                there_is_jump = true;
-            }
-             else if(belongs(NUMBER2, char_categories)){
-                precision = ch; is_float = true;
-                state = 1;
-                there_is_jump = true;
-            }
-             else if(belongs(NUMBER10, char_categories)){
-                state = 16;
-                there_is_jump = true;
-            }
-             else if(belongs(NUMBER11, char_categories)){
-                state = 12;
+            if(belongs(NUMBER_BEGIN, char_categories)){
+                exponent = exponent*10 + digit2int(ch);
+                state = 3;
                 there_is_jump = true;
             }
 
             break;
         case 11:
-            if(belongs(NUMBER5, char_categories)){
-                int_part = (int_part << 1) + digit2int(ch);
+            if(belongs(NUMBER_BEGIN, char_categories)){
+                fract_part = fract_part*10 + digit2int(ch); ++num_of_digits;
                 state = 4;
                 there_is_jump = true;
             }
 
             break;
         case 12:
-            if(belongs(NUMBER6, char_categories)){
-                int_part = (int_part << 3) + digit2int(ch);
-                state = 5;
-                there_is_jump = true;
-            }
-
-            break;
-        case 13:
             if(belongs(NUMBER_BEGIN, char_categories)){
-                fract_part = fract_part / 10 + digit2int(ch); num_of_digits_in_frac_part;bool is_float += 1;
-                state = 3;
-                there_is_jump = true;
-            }
-
-            break;
-        case 14:
-            if(belongs(NUMBER_BEGIN, char_categories)){
-                epower = power * 10 + digit2int(ch);
+                int_value = int_value*10 + digit2int(ch);
                 state = 6;
                 there_is_jump = true;
             }
 
             break;
-        case 15:
-            if(belongs(NUMBER_BEGIN, char_categories)){
-                int_part = int_part * 10 + digit2int(ch);
-                state = 9;
+        case 13:
+            if(belongs(NUMBER6, char_categories)){
+                int_value = (int_value << 4) + digit2int(ch);
+                state = 5;
                 there_is_jump = true;
             }
 
             break;
-        case 16:
-            if(belongs(NUMBER7, char_categories)){
-                int_part = (int_part << 4) + digit2int(ch);
-                state = 7;
+        case 14:
+            if(belongs(NUMBER11, char_categories)){
+                state = 10;
                 there_is_jump = true;
             }
 
@@ -615,14 +536,16 @@ bool Lexer::number_proc(){
             printf("At line %zu unexpectedly ended the number.", loc->current_line);
             en->increment_number_of_errors();
         }
-        
-          if(is_float){
-            token.float_val=build_float();
-            token.code = precision2code(precision);
-          } else {
-            token.int_val=int_part;
-            token.code = Int;
-          }
+        if(is_float)
+{
+token.code = Float;
+token.float_val = build_value();
+}
+else
+{
+token.code = Int;
+token.int_val = int_value;
+}
     }
 
     return t;
@@ -662,14 +585,16 @@ void Lexer::number_final_proc(){
         printf("At line %zu unexpectedly ended the number.", loc->current_line);
         en->increment_number_of_errors();
     }
-    
-          if(is_float){
-            token.float_val=build_float();
-            token.code = precision2code(precision);
-          } else {
-            token.int_val=int_part;
-            token.code = Int;
-          }
+    if(is_float)
+{
+token.code = Float;
+token.float_val = build_value();
+}
+else
+{
+token.code = Int;
+token.int_val = int_value;
+}
 }
 
 Lexem_info Lexer::current_lexem(){

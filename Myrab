@@ -1,0 +1,99 @@
+%scaner_name  Lexer
+
+%codes_type lexemcodes  
+
+%ident_name Id
+
+%idents {[:Letter:]|[:letter:]|_}{[:Letter:]|[:letter:]|_|[:digits:]}
+
+%class_members
+" __int128 int_value;__int128 fract_part;size_t exponent;int num_of_digits;int sign_of_degree;bool is_float;                              
+__float128 build_float();"
+
+%token_fields
+"unsigned __int128 int_val; __float128 float_val;"
+
+%codes 
+Equal,             Plus,               Minus,
+Mul,               Div,                Mod,
+LT,                GT,                 LEQ,
+GEQ,               Nequal,             FDiv,
+Lor,               LNor,               LNot,
+LAnd,              LNand,              LXor,
+LNXor,             Bor,                BNor,
+BXor,              BNXor,              BAnd,
+BNAnd,             LShift,             RShift,
+BNot,              Pow,                FPow,
+Assign,            Open_func,          close_func,
+Open_round,        Close_round,        cond_op,
+after_label,       Open_square,        Close_square,
+Semicolon,         Comma,              Dim_size,
+Colon,
+
+
+String, If,         Float,
+Else,   Var,        Int,
+Bool,   Char,       Void,
+Array,  True,       False,
+Proto,  Func,       Const,
+Elif,   Endif,      For,
+In,     While,      Repeat,
+Until,  Exit,       Continue,
+Return, Read,       Print,
+Kw_bool,Kw_string,  Kw_float,
+Kw_int,	Kw_char,    Kw_void  
+
+%impl_additions "
+#include <quadmath> 
+size_t digit2int(char32_t ch)
+{
+size_t v =  ch - U'0';
+return (v<=9)? v:(v&0b1101'1111) - 7;
+};
+__float128  Lexer::build_float()
+{
+__float128 num;                                                                               
+num = int_value + fract_part*powq(10, num_of_digits);
+num = num*powq(10, sign_of_degree*exponent);
+return num;}"
+
+%keywords
+"if" : If, "else" : Else, "int" : Kw_int, "var": Var, "float" : Kw_float,"bool":Kw_bool,
+"char" : Kw_char, "string" :Kw_string, "void" : Kw_void, "array" : Array, "true": True,
+"false": False,"proto": Proto,"func": Func, "const": Const, "elif": Elif, "endif": Endif,
+"for": For,"in": In,"while": While, "repeat": Repeat, "until": Until, "exit": Exit,
+"continue": Continue, "return": Return, "read": Read, "print":Print
+%delimiters
+"=" : Equal, "+" : Plus, "-" : Minus, "*" : Mul, "/" : Div, "%": Mod,"<": LT, ">":GT, 
+"<=": LEQ, ">=":GEQ, "!=":Nequal,"/.": FDiv, "||": Lor,"!||": LNor, "!":LNot, "&&": LAnd, 
+"!&&": LNAnd, "^^": LXor,"!^^": LNXor,"^":BXor,"~^":BNXor,"|":Bor, "~|":BNor,"&":BAnd, 
+"~&":BNAnd, "<<":LShift,">>":RShift,"~":BNot, "**":Pow, "**.":FPow,":=":Assign, 
+"{":Open_func,"}":close_func, "(":Open_round, ")":Close_round,"#":Dim_size, "?":cond_op,";":Semicolon,"::":after_label,"[":  Open_square,"]":Close_square,":":Colon, ",": Comma
+
+
+%numbers "int_value = 0; fract_part = 0; exponent = 0;sign_of_degree=1; num_of_digits = 0; is_float = false" : "if(is_float)
+{
+token.code = Float;
+token.float_val = build_value();
+}
+else
+{
+token.code = Int;
+token.int_val = int_value;
+}"
+
+%action SetFlag "is_float = true;"
+%action AddDecNumb "int_value = int_value*10 + digit2int(ch);"
+%action AddBinNumb "int_value = (int_value << 1) + digit2int(ch);"
+%action addOctDigit "int_value = (int_value << 3) + digit2int(ch);"
+%action addHexDigit "int_value = (int_value << 4) + digit2int(ch);"
+%action AddToDegre "exponent = exponent*10 + digit2int(ch);" 
+%action AddDecToFract "fract_part = fract_part*10 + digit2int(ch); ++num_of_digits;"
+
+
+{[:digits:]$AddDecNumb('?[:digits:]$AddDecNumb)*(.$SetFlag[:digits:]$AddDecToFract('?[:digits:]$AddDecToFract)*)
+?((E|e)$SetFlag(\+|-)[:digits:]$AddToDegre('?[:digits:]$AddToDegre)*)?
+|0o[:odigits:]$addOctDigit('?[:odigits:]$addOctDigit)*|
+0(b|B)[:bdigits:]$AddBinNumb('?[:bdigits:]$AddBinNumb)*|
+0(x|X)[:xdigits:]$addHexDigit('?[:xdigits:]$addHexDigit)*}
+
