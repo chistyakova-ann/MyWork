@@ -7,40 +7,40 @@
 #include <string>"
 
 enum lexemcodes : unsigned short {
-    None,       Unknown,     Equal,      
-    Plus,       Minus,       Mul,        
-    Div,        Mod,         LT,         
-    GT,         LEQ,         GEQ,        
-    Nequal,     FDiv,        Lor,        
-    LNor,       LNot,        LAnd,       
-    LNand,      LXor,        LNXor,      
-    Bor,        BNor,        BXor,       
-    BNXor,      BAnd,        BNAnd,      
-    LShift,     RShift,      BNot,       
-    Pow,        FPow,        Assign,     
-    Open_func,  close_func,  Open_round, 
-    Close_round,cond_op,     after_label,
-    Open_square,Close_square,Semicolon,  
-    Comma,      Dim_size,    Colon,      
-    String,     If,          Float,      
-    Else,       Var,         Int,        
-    Bool,       Char,        Void,       
-    Array,      True,        False,      
-    Proto,      Func,        Const,      
-    Elif,       Endif,       For,        
-    In,         While,       Repeat,     
-    Until,      Exit,        Continue,   
-    Return,     Read,        Print,      
-    Kw_bool,    Kw_string,   Kw_float,   
-    Kw_int,     Kw_char,     Kw_void,    
-    
+    None,            Unknown,          Equal,      
+    Plus,            Minus,            Mul,        
+    Div,             Mod,              LT,         
+    GT,              LEQ,              GEQ,        
+    Nequal,          FDiv,             Lor,        
+    LNor,            LNot,             LAnd,       
+    LNand,           LXor,             LNXor,      
+    Bor,             BNor,             BXor,       
+    BNXor,           BAnd,             BNAnd,      
+    LShift,          RShift,           BNot,       
+    Pow,             FPow,             Assign,     
+    Open_cur_bracket,close_cur_bracket,Open_round, 
+    Close_round,     cond_op,          after_label,
+    Open_square,     Close_square,     Semicolon,  
+    Comma,           Dim_size,         Colon,      
+    String,          If,               Float,      
+    Else,            Var,              Int,        
+    Bool,            Char,             Void,       
+    Array,           True,             False,      
+    Proto,           Func,             Const,      
+    Elif,            Endif,            For,        
+    In,              While,            Repeat,     
+    Until,           Exit,             Continue,   
+    Return,          Read,             Print,      
+    Kw_bool,         Kw_string,        Kw_float,   
+    Kw_int,          Kw_char,          Kw_void,    
+    Ope
 };
 
 struct Lexem_info{
     lexemcodes code;
     union{
         size_t    ident_index;
-unsigned __int128 int_val; __float128 float_val;
+
     };
 };
 
