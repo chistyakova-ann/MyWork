@@ -50,6 +50,9 @@ Kw_int,	Kw_char,    Kw_void
 "~&":BNAnd, "<<":LShift,">>":RShift,"~":BNot, "**":Pow, "**.":FPow,":=":Assign, 
 "{":Open_cur_bracket,"}":close_cur_bracket, "(":Open_round, ")":Close_round,"#":Dim_size, "?":cond_op,";":Semicolon,"::":after_label,"[":  Open_square,"]":Close_square,":":Colon, ",": Comma
 
+%strings "buffer.clean();":"token.code=(buffer.length()==1)?Char:String;"
+{"([:ndq:]$write|""$write)*"}  
+
 %impl_additions "
 #include <quadmath> 
 size_t digit2int(char32_t ch)

@@ -22,27 +22,27 @@ return num;}
 Lexer::Automaton_proc Lexer::procs[] = {
     &Lexer::start_proc(),     &Lexer::unknown_proc(),   
     &Lexer::idkeyword_proc(), &Lexer::delimiter_proc(), 
-    &Lexer::number_proc()
+    &Lexer::number_proc(),    &Lexer::string_proc()
 };
 
 Lexer::Final_proc Lexer::finals[] = {
     &Lexer::none_proc(),            &Lexer::unknown_final_proc(),   
     &Lexer::idkeyword_final_proc(), &Lexer::delimiter_final_proc(), 
-    &Lexer::number_final_proc()
+    &Lexer::number_final_proc(),    &Lexer::string_final_proc()
 };
 
 enum Category {
-    SPACES,     DELIMITER_BEGIN, 
-    NUMBER0,    NUMBER3,         
-    NUMBER4,    NUMBER_BEGIN,    
-    NUMBER1,    NUMBER2,         
-    NUMBER5,    NUMBER6,         
-    NUMBER7,    NUMBER8,         
-    NUMBER9,    NUMBER10,        
-    NUMBER11,   IDKEYWORD_BEGIN, 
-    IDKEYWORD0, IDKEYWORD1,      
-    IDKEYWORD2, IDKEYWORD3,      
-    Other
+    SPACES,          DELIMITER_BEGIN, 
+    STRING_BEGIN,    NUMBER0,         
+    NUMBER3,         NUMBER4,         
+    NUMBER_BEGIN,    NUMBER1,         
+    NUMBER2,         NUMBER5,         
+    NUMBER6,         NUMBER7,         
+    NUMBER8,         NUMBER9,         
+    NUMBER10,        NUMBER11,        
+    IDKEYWORD_BEGIN, IDKEYWORD0,      
+    IDKEYWORD1,      IDKEYWORD2,      
+    IDKEYWORD3,      Other
 };
 
 static const std::map<char32_t, uint32_t> categories_table = {
@@ -54,45 +54,46 @@ static const std::map<char32_t, uint32_t> categories_table = {
     {'\X14', 1},    {'\X15', 1},    {'\X16', 1},    {'\X17', 1},    
     {'\X18', 1},    {'\X19', 1},    {'\X1a', 1},    {'\X1b', 1},    
     {'\X1c', 1},    {'\X1d', 1},    {'\X1e', 1},    {'\X1f', 1},    
-    {' ', 1},       {'!', 2},       {'#', 2},       {'%', 2},       
-    {'&', 2},       {', 128},       {'(', 2},       {')', 2},       
-    {'*', 2},       {'+', 16386},   {',', 2},       {'-', 16386},   
-    {'.', 1024},    {'/', 2},       {'0', 262716},  {'1', 262776},  
-    {'2', 262768},  {'3', 262768},  {'4', 262768},  {'5', 262768},  
-    {'6', 262768},  {'7', 262768},  {'8', 262752},  {'9', 262752},  
-    {':', 2},       {';', 2},       {'<', 2},       {'=', 2},       
-    {'>', 2},       {'?', 2},       {'A', 360960},  {'B', 363008},  
-    {'C', 360960},  {'D', 360960},  {'E', 361216},  {'F', 360960},  
-    {'G', 360448},  {'H', 360448},  {'I', 360448},  {'J', 360448},  
-    {'K', 360448},  {'L', 360448},  {'M', 360448},  {'N', 360448},  
-    {'O', 360448},  {'P', 360448},  {'Q', 360448},  {'R', 360448},  
-    {'S', 360448},  {'T', 360448},  {'U', 360448},  {'V', 360448},  
-    {'W', 360448},  {'X', 364544},  {'Y', 360448},  {'Z', 360448},  
-    {'[', 2},       {']', 2},       {'^', 2},       {'_', 360448},  
-    {'a', 688640},  {'b', 428544},  {'c', 688640},  {'d', 623104},  
-    {'e', 688896},  {'f', 688640},  {'g', 622592},  {'h', 622592},  
-    {'i', 688128},  {'j', 360448},  {'k', 360448},  {'l', 622592},  
-    {'m', 360448},  {'n', 622592},  {'o', 630784},  {'p', 688128},  
-    {'q', 360448},  {'r', 688128},  {'s', 688128},  {'t', 688128},  
-    {'u', 688128},  {'v', 425984},  {'w', 425984},  {'x', 626688},  
-    {'y', 622592},  {'z', 360448},  {'{', 2},       {'|', 2},       
-    {'}', 2},       {'~', 2},       {'Ё', 360448}, {'А', 360448}, 
-    {'Б', 360448}, {'В', 360448}, {'Г', 360448}, {'Д', 360448}, 
-    {'Е', 360448}, {'Ж', 360448}, {'З', 360448}, {'И', 360448}, 
-    {'Й', 360448}, {'К', 360448}, {'Л', 360448}, {'М', 360448}, 
-    {'Н', 360448}, {'О', 360448}, {'П', 360448}, {'Р', 360448}, 
-    {'С', 360448}, {'Т', 360448}, {'У', 360448}, {'Ф', 360448}, 
-    {'Х', 360448}, {'Ц', 360448}, {'Ч', 360448}, {'Ш', 360448}, 
-    {'Щ', 360448}, {'Ъ', 360448}, {'Ы', 360448}, {'Ь', 360448}, 
-    {'Э', 360448}, {'Ю', 360448}, {'Я', 360448}, {'а', 360448}, 
-    {'б', 360448}, {'в', 360448}, {'г', 360448}, {'д', 360448}, 
-    {'е', 360448}, {'ж', 360448}, {'з', 360448}, {'и', 360448}, 
-    {'й', 360448}, {'к', 360448}, {'л', 360448}, {'м', 360448}, 
-    {'н', 360448}, {'о', 360448}, {'п', 360448}, {'р', 360448}, 
-    {'с', 360448}, {'т', 360448}, {'у', 360448}, {'ф', 360448}, 
-    {'х', 360448}, {'ц', 360448}, {'ч', 360448}, {'ш', 360448}, 
-    {'щ', 360448}, {'ъ', 360448}, {'ы', 360448}, {'ь', 360448}, 
-    {'э', 360448}, {'ю', 360448}, {'я', 360448}, {'ё', 360448}
+    {' ', 1},       {'!', 2},       {", 4},         {'#', 2},       
+    {'%', 2},       {'&', 2},       {', 256},       {'(', 2},       
+    {')', 2},       {'*', 2},       {'+', 32770},   {',', 2},       
+    {'-', 32770},   {'.', 2048},    {'/', 2},       {'0', 525432},  
+    {'1', 525552},  {'2', 525536},  {'3', 525536},  {'4', 525536},  
+    {'5', 525536},  {'6', 525536},  {'7', 525536},  {'8', 525504},  
+    {'9', 525504},  {':', 2},       {';', 2},       {'<', 2},       
+    {'=', 2},       {'>', 2},       {'?', 2},       {'A', 721920},  
+    {'B', 726016},  {'C', 721920},  {'D', 721920},  {'E', 722432},  
+    {'F', 721920},  {'G', 720896},  {'H', 720896},  {'I', 720896},  
+    {'J', 720896},  {'K', 720896},  {'L', 720896},  {'M', 720896},  
+    {'N', 720896},  {'O', 720896},  {'P', 720896},  {'Q', 720896},  
+    {'R', 720896},  {'S', 720896},  {'T', 720896},  {'U', 720896},  
+    {'V', 720896},  {'W', 720896},  {'X', 729088},  {'Y', 720896},  
+    {'Z', 720896},  {'[', 2},       {']', 2},       {'^', 2},       
+    {'_', 720896},  {'a', 1377280}, {'b', 857088},  {'c', 1377280}, 
+    {'d', 1246208}, {'e', 1377792}, {'f', 1377280}, {'g', 1245184}, 
+    {'h', 1245184}, {'i', 1376256}, {'j', 720896},  {'k', 720896},  
+    {'l', 1245184}, {'m', 720896},  {'n', 1245184}, {'o', 1261568}, 
+    {'p', 1376256}, {'q', 720896},  {'r', 1376256}, {'s', 1376256}, 
+    {'t', 1376256}, {'u', 1376256}, {'v', 851968},  {'w', 851968},  
+    {'x', 1253376}, {'y', 1245184}, {'z', 720896},  {'{', 2},       
+    {'|', 2},       {'}', 2},       {'~', 2},       {'Ё', 720896}, 
+    {'А', 720896}, {'Б', 720896}, {'В', 720896}, {'Г', 720896}, 
+    {'Д', 720896}, {'Е', 720896}, {'Ж', 720896}, {'З', 720896}, 
+    {'И', 720896}, {'Й', 720896}, {'К', 720896}, {'Л', 720896}, 
+    {'М', 720896}, {'Н', 720896}, {'О', 720896}, {'П', 720896}, 
+    {'Р', 720896}, {'С', 720896}, {'Т', 720896}, {'У', 720896}, 
+    {'Ф', 720896}, {'Х', 720896}, {'Ц', 720896}, {'Ч', 720896}, 
+    {'Ш', 720896}, {'Щ', 720896}, {'Ъ', 720896}, {'Ы', 720896}, 
+    {'Ь', 720896}, {'Э', 720896}, {'Ю', 720896}, {'Я', 720896}, 
+    {'а', 720896}, {'б', 720896}, {'в', 720896}, {'г', 720896}, 
+    {'д', 720896}, {'е', 720896}, {'ж', 720896}, {'з', 720896}, 
+    {'и', 720896}, {'й', 720896}, {'к', 720896}, {'л', 720896}, 
+    {'м', 720896}, {'н', 720896}, {'о', 720896}, {'п', 720896}, 
+    {'р', 720896}, {'с', 720896}, {'т', 720896}, {'у', 720896}, 
+    {'ф', 720896}, {'х', 720896}, {'ц', 720896}, {'ч', 720896}, 
+    {'ш', 720896}, {'щ', 720896}, {'ъ', 720896}, {'ы', 720896}, 
+    {'ь', 720896}, {'э', 720896}, {'ю', 720896}, {'я', 720896}, 
+    {'ё', 720896}
 };
 
 
@@ -117,6 +118,13 @@ bool Lexer::start_proc(){
     if(belongs(DELIMITER_BEGIN, char_categories)){
         (loc->pcurrent_char)--; automaton = A_delimiter;
         state = -1;
+        return t;
+    }
+
+    if(belongs(STRING_BEGIN, char_categories)){
+        (loc->pcurrent_char)--; automaton = A_string;
+        state = 0;
+        buffer.clean();
         return t;
     }
 
@@ -551,6 +559,58 @@ token.int_val = int_value;
     return t;
 }
 
+static const std::set<size_t> final_states_for_strings = {
+    1
+};
+
+bool Lexer::string_proc(){
+    bool t             = true;
+    bool there_is_jump = false;
+    switch(state){
+        case 0:
+            if(belongs(STRING_BEGIN, char_categories)){
+                state = 2;
+                there_is_jump = true;
+            }
+
+            break;
+        case 1:
+            if(belongs(STRING_BEGIN, char_categories)){
+                buffer += ch;
+                state = 2;
+                there_is_jump = true;
+            }
+
+            break;
+        case 2:
+            if(ch != U'\"'){
+                buffer += ch;
+                state = 2;
+                there_is_jump = true;
+            }
+             else if(belongs(STRING_BEGIN, char_categories)){
+                state = 1;
+                there_is_jump = true;
+            }
+
+            break;
+        default:
+            ;
+    }
+
+    if(!there_is_jump){
+        t = false;
+        if(!is_elem(state, final_states_for_strings)){
+            printf("At line %zu unexpectedly ended a string literal.", loc->current_line);
+            en->increment_number_of_errors();
+        }
+        token.code=(buffer.length()==1)?Char:String;
+            token.string_index = strs -> insert(buffer);
+    }
+
+    return t;
+}
+
 void Lexer::none_proc(){
     /* This subroutine will be called if, after reading the input text, it turned
      * out to be in the A_start automaton. Then you do not need to do anything. */
@@ -595,6 +655,15 @@ else
 token.code = Int;
 token.int_val = int_value;
 }
+}
+
+void Lexer::string_final_proc(){
+    if(!is_elem(state, final_states_for_strings)){
+        printf("At line %zu unexpectedly ended a string literal.", loc->current_line);
+        en->increment_number_of_errors();
+    }
+    token.code=(buffer.length()==1)?Char:String;
+    token.string_index = strs -> insert(buffer);
 }
 
 Lexem_info Lexer::current_lexem(){
